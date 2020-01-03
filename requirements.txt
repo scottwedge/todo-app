@@ -1,2 +1,6 @@
 flask
 Flask-RESTful
+Flask-SQLAlchemy
+flask-marshmallow
+marshmallow
+marshmallow-sqlalchemy
