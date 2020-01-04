@@ -132,4 +132,7 @@ dmypy.json
 .vscode/
 
 # SQLite db
-data.db
+*.db
+
+# Migrations
+/service/migrations

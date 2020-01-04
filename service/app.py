@@ -1,27 +1,14 @@
-from flask import Flask
+from flask import Blueprint
+from flask_restful import Api
 
-from db import orm
-from ma import ma
-from views import service_blueprint
+from resources.task import TaskListResource
+from resources.user import User, UserRegister
 
-app = Flask(__name__)
-# TODO: Switch to using a seperate config file
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+service_blueprint = Blueprint("service", __name__)
+service = Api(service_blueprint)
 
 
-@app.route("/")
-def test():
-    return "Hello, World!"
-
-
-@app.before_first_request
-def create_tables():
-    orm.create_all()
-
-
-if __name__ == "__main__":
-    orm.init_app(app)
-    ma.init_app(app)
-    app.register_blueprint(service_blueprint, url_prefix="/service")
-    app.run(port=5000, debug=True)
+# Routes
+service.add_resource(UserRegister, "/register")
+service.add_resource(TaskListResource, "/tasks")
+service.add_resource(User, "/users/<int:user_id>")

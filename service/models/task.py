@@ -1,4 +1,4 @@
-from db import orm
+from orm import orm
 
 
 class TaskModel(orm.Model):
