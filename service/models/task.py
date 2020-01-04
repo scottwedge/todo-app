@@ -1,4 +1,13 @@
 from orm import orm
+from enum import Enum
+from typing import List
+
+
+class Priority(Enum):
+    DEFAULT = 0
+    LOW = 1
+    MEDIUM = 2
+    TOP = 3
 
 
 class TaskModel(orm.Model):
@@ -6,7 +15,24 @@ class TaskModel(orm.Model):
 
     id = orm.Column(orm.Integer, primary_key=True)
     content = orm.Column(orm.String(120), nullable=False)
+    note = orm.Column(orm.String(255))
+    priority = orm.Column(orm.Enum(Priority), nullable=False)
+    completed = orm.Column(orm.Boolean, nullable=False)
 
-    def __init__(self, id, content):
-        self.id = id
-        self.content = content
+    category_id = orm.Column(orm.Integer, orm.ForeignKey("category.id"), nullable=False)
+
+    @classmethod
+    def find_by_id(cls, _id: int) -> "TaskModel":
+        return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_all(cls) -> List["TaskModel"]:
+        return cls.query.all()
+
+    def save_to_db(self) -> None:
+        orm.session.add(self)
+        orm.session.commit()
+
+    def delete_from_db(self) -> None:
+        orm.session.delete(self)
+        orm.session.commit()

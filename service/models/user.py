@@ -8,6 +8,8 @@ class UserModel(orm.Model):
     username = orm.Column(orm.String(64), unique=True, nullable=False)
     password = orm.Column(orm.String(94), nullable=False)
 
+    categories = orm.relationship("CategoryModel", backref="user", lazy="dynamic")
+
     @classmethod
     def find_by_username(cls, username: str) -> "UserModel":
         return cls.query.filter_by(username=username).first()
