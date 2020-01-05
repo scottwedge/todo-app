@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 from werkzeug.security import check_password_hash, generate_password_hash, safe_str_cmp
 
+from util import generate_message_json
 from models.user import UserModel  # TODO: Check if this is redundant
 from schemas.user import UserSchema
 from http_status_code import HttpStatusCode
@@ -16,10 +17,6 @@ CREATED_SUCCESFULLY = "User created successfully."
 USER_NOT_FOUND = "User not found."
 
 
-def generate_message_json(message, http_status_code):
-    return {"message": message}, http_status_code
-
-
 class UserRegister(Resource):
     @classmethod
     def post(cls):
@@ -28,11 +25,11 @@ class UserRegister(Resource):
 
         if UserModel.find_by_username(user.username):
             return generate_message_json(
-                USER_ALREADY_EXISTS, HttpStatusCode.BAD_REQUEST.value
+                HttpStatusCode.BAD_REQUEST.value, USER_ALREADY_EXISTS
             )
         elif len(user.password) < 8:
             return generate_message_json(
-                PASSWORD_TOO_SHORT, HttpStatusCode.BAD_REQUEST.value
+                HttpStatusCode.BAD_REQUEST.value, PASSWORD_TOO_SHORT
             )
 
         # Hash password
@@ -41,7 +38,7 @@ class UserRegister(Resource):
         # Save user
         user.save_to_db()
 
-        return generate_message_json(CREATED_SUCCESFULLY, HttpStatusCode.CREATED.value)
+        return generate_message_json(HttpStatusCode.CREATED.value, CREATED_SUCCESFULLY)
 
 
 class User(Resource):
@@ -51,7 +48,7 @@ class User(Resource):
     def get(cls, user_id: int):
         user = UserModel.find_by_id(user_id)
         if not user:
-            return generate_message_json(USER_NOT_FOUND, HttpStatusCode.NOT_FOUND.value)
+            return generate_message_json(HttpStatusCode.NOT_FOUND.value, USER_NOT_FOUND)
 
         return user_schema.dump(user), HttpStatusCode.OK.value
 
@@ -59,7 +56,7 @@ class User(Resource):
     def delete(cls, user_id: int):
         user = UserModel.find_by_id(user_id)
         if not user:
-            return generate_message_json(USER_NOT_FOUND, HttpStatusCode.NOT_FOUND.value)
+            return generate_message_json(HttpStatusCode.NOT_FOUND.value, USER_NOT_FOUND)
 
         user.delete_from_db()
-        return HttpStatusCode.NO_CONTENT.value
+        return "", HttpStatusCode.NO_CONTENT.value

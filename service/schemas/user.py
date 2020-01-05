@@ -10,4 +10,3 @@ class UserSchema(ma.ModelSchema):
         model = UserModel
         load_only = ("password",)
         dump_only = ("id",)
-        include_fk = True

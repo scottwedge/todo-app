@@ -17,6 +17,7 @@ class TaskModel(orm.Model):
     content = orm.Column(orm.String(120), nullable=False)
     note = orm.Column(orm.String(255))
     priority = orm.Column(orm.Enum(Priority), nullable=False)
+    due_date = orm.Column(orm.TIMESTAMP)
     completed = orm.Column(orm.Boolean, nullable=False)
 
     category_id = orm.Column(orm.Integer, orm.ForeignKey("category.id"), nullable=False)
@@ -26,8 +27,11 @@ class TaskModel(orm.Model):
         return cls.query.filter_by(id=_id).first()
 
     @classmethod
-    def find_all(cls) -> List["TaskModel"]:
-        return cls.query.all()
+    def find_all(cls, priority: Priority = None) -> List["TaskModel"]:
+        if not priority:
+            return cls.query.all()
+        else:
+            return cls.query.filter_by(priority=priority.value)
 
     def save_to_db(self) -> None:
         orm.session.add(self)

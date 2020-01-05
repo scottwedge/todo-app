@@ -4,14 +4,14 @@ from typing import List
 
 
 class Accent(Enum):
+    BLACK = "BLACK"
     BLUE = "BLUE"
-    GREEN = "GREEN"
-    PURPLE = "PURPLE"
-    ORANGE = "ORANGE"
+    BROWN = "BROWN"
     GOLD = "GOLD"
     GRAY = "GRAY"
-    BROWN = "BROWN"
-    BLACK = "BLACK"
+    GREEN = "GREEN"
+    ORANGE = "ORANGE"
+    PURPLE = "PURPLE"
 
 
 class CategoryModel(orm.Model):
@@ -28,6 +28,10 @@ class CategoryModel(orm.Model):
     @classmethod
     def find_by_id(cls, _id: int) -> "CategoryModel":
         return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_by_user_id_and_title(cls, user_id: int, title: str) -> "CategoryModel":
+        return cls.query.filter_by(user_id=user_id, title=title).first()
 
     @classmethod
     def find_all(cls) -> List["CategoryModel"]:
