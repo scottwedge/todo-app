@@ -9,9 +9,4 @@ def generate_message_json(http_status_code, value, key="message"):
 
 def check_attr(attrs: List[str], obj: Any) -> bool:
     for attr in attrs:
-        try:
-            getattr(obj, attr)
-        except AttributeError:
-            return False
-
-    return True
+        getattr(obj, attr)

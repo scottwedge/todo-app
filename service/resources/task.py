@@ -14,7 +14,6 @@ task_list_schema = TaskSchema(many=True)
 # Response message
 TASK_NOT_FOUND = "Task not found."
 FIELD_CANNOT_BE_EDITED = "The {} cannot be edited."
-INVALID_ATTR = "Invalid attributes and/or invalid values for specfied attrubutes."
 
 
 class TaskListResource(Resource):
@@ -72,21 +71,17 @@ class TaskResource(Resource):
 
         # Check if the client specified non existing attrs
 
-        if check_attr(json.keys(), task):
-            try:
-                for key, value in json.items():
-                    setattr(task, key, value)
+        try:
+            check_attr(json.keys(), task)
+            for key, value in json.items():
+                setattr(task, key, value)
 
-                task.save_to_db()  # Persist chages to db
-            except SQLAlchemyError:
-                # NOTE: This isn't a good error message in that it lacks proper information
-                return generate_message_json(
-                    HttpStatusCode.BAD_REQUEST.value, INVALID_ATTR
-                )
-
+            task.save_to_db()  # Persist chages to db
             return task_schema.dump(task), HttpStatusCode.OK.value
-
-        return generate_message_json(HttpStatusCode.BAD_REQUEST.value, INVALID_ATTR)
+        except AttributeError as ae:
+            return generate_message_json(HttpStatusCode.BAD_REQUEST.value, str(ae))
+        except SQLAlchemyError as se:
+            return generate_message_json(HttpStatusCode.BAD_REQUEST.value, str(se))
 
     @classmethod
     @jwt_required
