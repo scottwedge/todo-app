@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
+from marshmallow import ValidationError, Key
 
 from blacklist import BLACKLIST
 from http_status_code import HttpStatusCode
@@ -32,6 +33,11 @@ def create_app(confif_filename):
 
 app = create_app("config")
 jwt = JWTManager(app)
+
+
+@app.errorhandler(ValidationError)
+def handle_marshmallow_validation(err):
+    return jsonify(err.messages), HttpStatusCode.BAD_REQUEST.value
 
 
 @jwt.expired_token_loader
