@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
-from marshmallow import ValidationError, Key
+from marshmallow import ValidationError
 
 from blacklist import BLACKLIST
 from http_status_code import HttpStatusCode
@@ -72,7 +72,4 @@ def unauthorized_loader_callback(error):
 
 @jwt.token_in_blacklist_loader
 def token_in_blacklist_callback(decrypted_token):
-    print(BLACKLIST)
-    print(decrypted_token["jti"])
-    print(f"{decrypted_token['jti'] in BLACKLIST}")
     return decrypted_token["jti"] in BLACKLIST
