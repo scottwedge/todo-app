@@ -1,5 +1,6 @@
 from flask import request
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 
 from util import generate_message_json
 from http_status_code import HttpStatusCode
@@ -16,6 +17,7 @@ CATEGORY_NOT_FOUND = "Category not found."
 
 class CategoryListResource(Resource):
     @classmethod
+    @jwt_required
     def get(cls, user_id: int):
         return generate_message_json(
             HttpStatusCode.OK.value,
@@ -24,6 +26,7 @@ class CategoryListResource(Resource):
         )
 
     @classmethod
+    @jwt_required
     def post(cls, user_id: int):
         json = request.get_json()
         json["user_id"] = user_id
@@ -41,6 +44,7 @@ class CategoryListResource(Resource):
 
 class CategoryResource(Resource):
     @classmethod
+    @jwt_required
     def get(cls, category_id: int):
         category = CategoryModel.find_by_id(category_id)
         if category:
@@ -49,6 +53,7 @@ class CategoryResource(Resource):
         return generate_message_json(HttpStatusCode.NOT_FOUND.value, CATEGORY_NOT_FOUND)
 
     @classmethod
+    @jwt_required
     def delete(cls, category_id: int):
         category = CategoryModel.find_by_id(category_id)
         if category:

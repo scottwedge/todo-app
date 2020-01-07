@@ -1,5 +1,6 @@
 from flask import request
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required
 
 from util import generate_message_json
 from http_status_code import HttpStatusCode
@@ -15,6 +16,7 @@ TASK_NOT_FOUND = "Task not found."
 
 class TaskListResource(Resource):
     @classmethod
+    @jwt_required
     def get(cls, category_id: int):
         return generate_message_json(
             HttpStatusCode.OK.value,
@@ -23,6 +25,7 @@ class TaskListResource(Resource):
         )
 
     @classmethod
+    @jwt_required
     def post(cls, category_id: int):
         json = request.get_json()
         json["category_id"] = category_id
@@ -35,6 +38,7 @@ class TaskListResource(Resource):
 
 class TaskResource(Resource):
     @classmethod
+    @jwt_required
     def get(cls, task_id: int):
         task = TaskModel.find_by_id(task_id)
         if task:
@@ -43,6 +47,7 @@ class TaskResource(Resource):
         return generate_message_json(HttpStatusCode.NOT_FOUND.value, TASK_NOT_FOUND)
 
     @classmethod
+    @jwt_required
     def delete(cls, task_id: int):
         task = TaskModel.find_by_id(task_id)
         if task:
